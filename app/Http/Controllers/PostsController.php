@@ -8,7 +8,9 @@ use App\Post;
 use App\Item;
 use App\RequestOrders;
 use App\Material;
+use App\Site;
 use DB;
+use Illuminate\Support\Facades\Log as FacadesLog;
 use Log;
 
 class PostsController extends Controller
@@ -47,21 +49,44 @@ class PostsController extends Controller
      */
     public function create()
     {
-        session_start();
-        
-        $sites = array("Colombo-1", "Colombo-2", "Colombo-3", "Colombo-4", "Colombo-5");
-
-        $items = Material::all();
-       $materialsList = Material::all();
-        foreach($materialsList as $mitem){
-            $mitem->MATERIAL_DESCRIPTION = $mitem->MATERIAL_DESCRIPTION."---".
-            $mitem->materialUnit->unit."---".$mitem->materialType->type;
-        }
-       // $materialsList = $materialsList->pluck('MATERIAL_DESCRIPTION', 'id');
+        $materialsList = null;
         $requestedItems = array();
-        $_SESSION["materialsList"] = $materialsList;
-
-        return view('posts.create')->with('materialsList', $materialsList)->with('sites', $sites)->with('requestedItems', $requestedItems);
+        $items = Material::all();
+        $sites = Site::all();
+        session_start();
+        if(!isset($_SESSION["materialsList"])){
+            Log::info('Session is empty, loading materials from the database');
+            $materialsList = Material::all();
+            foreach($materialsList as $mitem){
+                $mitem->MATERIAL_DESCRIPTION = $mitem->MATERIAL_DESCRIPTION."---".
+                $mitem->materialUnit->unit."---".$mitem->materialType->type;
+            }
+            $_SESSION["materialsList"] = $materialsList;
+        }else{
+            Log::info('Session is available, loading materials from Session');
+            $materialsList = $_SESSION["materialsList"];
+        }
+        
+        if(auth()->user()->hasRole('Administrator|Registar|Office|PO|QA')){ // Load orders from all sites
+            $requestedItems = RequestOrders::where('Status', '!=', 'RECEIVED')->get();
+        }
+        else if(auth()->user()->hasRole('SK|Site')){ // Load orders belons to their site
+            // $sites = auth()->user()->sites;
+            
+            // $siteList = "";
+            // foreach ($sites as $site) {
+            //     $siteList != "" && $siteList .= ",";
+            //     $siteList .= $site->id;
+            // }
+            $siteList = DB::table('site_user')->where('user_id', auth()->user()->id)->pluck('site_id');
+            Log::info($siteList);
+            $requestedItems = RequestOrders::whereIn('Site_ID', $siteList)->orderBy('created_at','desc')->get();
+        }else{
+            
+        }
+        return view('posts.create')->with('materialsList', $materialsList)
+        ->with('sites', $sites)
+        ->with('requestedItems', $requestedItems);
     }
 
     /**
@@ -73,7 +98,11 @@ class PostsController extends Controller
     public function store(Request $request)
     {
         session_start();
-
+        $this->validate($request, [
+            'quantity' => 'required',
+            'dispatchDate' => 'required'
+            
+        ]);
        $materialsList = $_SESSION["materialsList"];
       // Log::info('This is some useful information.');
        Log::info($request->input('siteId'));
@@ -85,11 +114,12 @@ class PostsController extends Controller
        $requestOrder->Dispatch_Date = $request->input('dispatchDate');
        $requestOrder->Requested_User_ID = auth()->user()->id;
        $requestOrder->Status="NEW";
+       $requestOrder->remarks = $request->input('remarks');
        $requestOrder->save();
 
        //Create Item Request
        //$itemRequest = new ItemRequest;
-       $sites = array("Colombo-1", "Colombo-2", "Colombo-3", "Colombo-4", "Colombo-5");
+       $sites = Site::all();
        $materialsList = $_SESSION["materialsList"];
        
        $requestedItems = array();
@@ -124,15 +154,26 @@ class PostsController extends Controller
     public function edit($id)
     {
         //$post = Post::find($id);
-
+        Log::info('edit');
         $requestOrder = RequestOrders::find($id);
-        
+        $orderStatus = null;
+        $selectedOrder = null;
         //Check if post exists before deleting
         if (!isset($requestOrder)){
             return redirect('/posts')->with('error', 'No Post Found');
         }
 
-        return view('posts.edit')->with('requestOrder', $requestOrder);
+        if($requestOrder->status=="NEW"){
+            $orderStatus = array(
+                 "QQ",
+                  "HOLD",
+            );
+            $selectedOrder="QQ";
+        }
+
+        return view('posts.edit')->with('requestOrder', $requestOrder)
+                ->with('orderStatus', $orderStatus)
+                ->with('selectedOrder',$selectedOrder);
     }
 
     /**
@@ -144,13 +185,17 @@ class PostsController extends Controller
      */
     public function update(Request $request, $id)
     {
+        Log::info('update');
         $requestOrder = RequestOrders::find($id);
         
         // Update Post
         $requestOrder->status = $request->input('status');
+        $requestOrder->remarks = $request->input('remarks');
         $requestOrder->save();
 
-        return redirect('/posts')->with('success', 'Post Updated');
+        return view('orders.updatesuccess')->with('requestOrder', $requestOrder);
+        //return redirect('/posts')->with('success', 'Post Updated');
+        
     }
 
     /**

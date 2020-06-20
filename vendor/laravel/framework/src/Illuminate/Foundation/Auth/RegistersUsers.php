@@ -28,6 +28,7 @@ trait RegistersUsers
         echo($roles);
        // $roles=$roles->pluck('name','id');
         //$items = $items->pluck('itemCode', 'id');
+        //sites
         return view('auth.register')->with('roles', $roles);
     }
 
@@ -41,7 +42,7 @@ trait RegistersUsers
     {
         $this->validator($request->all())->validate();
 
-        
+
 
         $user=User::find(1);
 

@@ -10,6 +10,7 @@
         
         <div class="form-group">
             {{Form::label('siteDesc', 'Site Description')}}
+            
             {{Form::textarea('siteDesc', '', ['id' => 'article-ckeditor', 'class' => 'form-control', 'placeholder' => 'Site Description'])}}
         </div>
 

@@ -30,6 +30,7 @@ Route::resource('posts', 'PostsController');
 Route::resource('requestorder', 'RequestOrderController');
 Route::resource('site', 'SiteController');
 Route::resource('material', 'MaterialController');
+Route::resource('users', 'UserController');
 Auth::routes();
 
 Route::get('/dashboard', 'DashboardController@index');

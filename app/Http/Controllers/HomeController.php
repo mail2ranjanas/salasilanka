@@ -28,16 +28,17 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $user=User::find(20); 
+        //$role = Role::create(['name' => 'Registar']);
+        // $user=User::find(20); 
 
-        $role1=Role::find(1);
-        $role2=Role::find(2);
+        // $role1=Role::find(1);
+        // $role2=Role::find(2);
 
-        $user->assignRole($role1);
-        $user->assignRole($role2);
+        // $user->assignRole($role1);
+        // $user->assignRole($role2);
 
-        Log::info($user->getRoleNames());
-        Log::info($user->name);
+        // Log::info($user->getRoleNames());
+        // Log::info($user->name);
         return view('home');
     }
 }

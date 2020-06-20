@@ -23,4 +23,8 @@ class RequestOrders extends Model
     {
         return $this->hasOne('App\MaterialUnit', 'id', 'Material_Unit');
     }
+    public function site()
+    {
+        return $this->hasOne('App\Site', 'id', 'Site_ID');
+    }
 }

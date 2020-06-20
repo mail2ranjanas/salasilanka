@@ -25,9 +25,10 @@
             <ul class="nav navbar-nav">
               <li><a href="/">Home</a></li>
               <li><a href="/posts/create">Create Item Request</a></li>
-              <li><a href="/site/create">Site</a></li>
+              <li><a href="/site">Site</a></li>
               <li><a href="/display-orders">DisplayOrders</a></li>
               <li><a href="/material">Materials</a></li>
+              <li><a href="/users">Users</a></li>
             </ul>
 
             <!-- Right Side Of Navbar -->

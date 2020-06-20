@@ -1,18 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Post;
-use App\Item;
-use App\RequestOrders;
-use App\MaterialUnit;
-use App\MaterialType;
-use App\Material;
-use Spatie\Permission\Models\Role;
-use DB;
-use Log;
-use Illuminate\Http\Request;
 
-class MaterialController extends Controller
+use Illuminate\Http\Request;
+Use App\User;
+use Illuminate\Support\Facades\Log;
+use Spatie\Permission\Models\Role;
+
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -21,15 +16,9 @@ class MaterialController extends Controller
      */
     public function index()
     {
-        //
-        // Role::create(['name' => 'Registar']);
-        // Role::create(['name' => 'Office']);
-        // Role::create(['name' => 'SK']);
-        // Role::create(['name' => 'PO']);
-        // Role::create(['name' => 'SITE']);
-        // Role::create(['name' => 'QA']);
-        $materials = Material::orderBy('MATERIAL_DESCRIPTION','asc')->paginate(10);
-        return view('material.index')->with('materials', $materials);
+        $roles = Role::get();
+        $users = User::orderBy('name','asc')->paginate(5);
+        return view('users.index')->with('users', $users)->with('roles', $roles);
     }
 
     /**
@@ -72,16 +61,7 @@ class MaterialController extends Controller
      */
     public function edit($id)
     {
-        $material = Material::find($id);
-        
-        //Check if post exists before deleting
-        if (!isset($material)){
-            return redirect('/posts')->with('error', 'No Post Found');
-        }
-        $materialUnits = MaterialUnit::all();
-        $materialTypes = MaterialType::all();
-        return view('material.edit')->with('material', $material)->with('materialUnits',$materialUnits)
-        ->with('materialTypes',$materialTypes);
+        //
     }
 
     /**
@@ -93,7 +73,17 @@ class MaterialController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = User::find($id);
+        $roles = Role::get();
+        $users = User::orderBy('name','asc')->paginate(5);
+        foreach($user->getRoleNames() as $roleName){
+            $user->removeRole($roleName);
+        }
+            foreach($request->input('roleList') as $role1){
+                $user->assignRole($role1); 
+            }
+        
+        return view('users.index')->with('users', $users)->with('roles', $roles);
     }
 
     /**

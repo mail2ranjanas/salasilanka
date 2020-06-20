@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
+use App\Site;
 class User extends Authenticatable
 {
     use Notifiable, HasRoles;
@@ -30,5 +31,9 @@ class User extends Authenticatable
 
     public function posts(){
         return $this->hasMany('App\Post');
+    }
+    public function sites()
+    {
+        return $this->belongsToMany(Site::class, 'site_user');
     }
 }

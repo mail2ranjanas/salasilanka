@@ -11,6 +11,7 @@
           <th>Site Name</th>
           <th>Site Description</th>
           <th>Site Start Date</th>
+          <th>Allocate Users</th>
         </tr>
       </thead>
       
@@ -32,10 +33,12 @@
           <td>{{$site->Site_Name}}</td>
           <td>"{{$site->Site_Desc}}"</td>
           <td>{{$site->created_at}}</td>
+          <td><a href="/site/{{$site->id}}/edit" class="btn btn-primary">Allocate/Deallocate</a></td>
         </tr>
         @endforeach
       </tbody>
     </table>
+    <a href="/site/create" class="btn btn-primary">Create New Site</a>
   </div>
 
   
