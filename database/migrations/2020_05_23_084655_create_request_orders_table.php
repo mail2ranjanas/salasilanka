@@ -21,7 +21,7 @@ class CreateRequestOrdersTable extends Migration
             $table->date('Requested_Date');
             $table->date('Dispatch_Date');
             $table->integer('Material_Unit');
-            $table->string('Quality_Checcked');
+            $table->string('Quality_Checked');
             $table->date('Quality_Checked_Date');
             $table->string('PO_Raised');
             $table->date('PO Date');

@@ -52,7 +52,19 @@ class PostsController extends Controller
         $materialsList = null;
         $requestedItems = array();
         $items = Material::all();
-        $sites = Site::all();
+        $sites = null;
+
+        //Load site list 
+        if(auth()->user()->hasRole('Administrator|Registar|Office|PO|QA')){
+            $sites = Site::all();
+        }else{
+            
+            $sitesList = DB::table('site_user')->where('user_id', auth()->user()->id)->pluck('site_id');
+            Log::info($sitesList);
+            $sites = Site::whereIn('id', $sitesList)->get();
+            Log::info($sites);
+        }
+
         session_start();
         if(!isset($_SESSION["materialsList"])){
             Log::info('Session is empty, loading materials from the database');
@@ -99,9 +111,9 @@ class PostsController extends Controller
     {
         session_start();
         $this->validate($request, [
+            'siteId' => 'required',
             'quantity' => 'required',
             'dispatchDate' => 'required'
-            
         ]);
        $materialsList = $_SESSION["materialsList"];
       // Log::info('This is some useful information.');
@@ -119,7 +131,15 @@ class PostsController extends Controller
 
        //Create Item Request
        //$itemRequest = new ItemRequest;
-       $sites = Site::all();
+       $sites = null;
+         //Load site list 
+        if(auth()->user()->hasRole('Administrator|Registar|Office|PO|QA')){
+            $sites = Site::all();
+        }else{
+            $sitesList = DB::table('site_user')->where('user_id', auth()->user()->id)->pluck('site_id');
+            $sites = Site::whereIn('id', $sitesList)->get();
+            Log::info($sites);
+        }
        $materialsList = $_SESSION["materialsList"];
        
        $requestedItems = array();

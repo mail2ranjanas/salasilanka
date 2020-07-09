@@ -59,7 +59,7 @@
                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
                             </div>
                         </div>
-
+{{-- 
                         <div class="form-group">
                             <label for="password-confirm" class="col-md-4 control-label">Roles</label>
 
@@ -74,7 +74,7 @@
                                 @endforeach
                             </div>
                          
-                        </div>
+                        </div> --}}
                         
 
                         <div class="form-group">

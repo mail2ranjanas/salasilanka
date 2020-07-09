@@ -206,7 +206,7 @@ class RequestOrderController extends Controller
         if(strcmp($orderStatus, 'QQ')==0){
             Log::info('Status '.$orderStatus);
             $requestOrder->Quality_Checked_Date=date("Y/m/d");
-            $requestOrder->Quality_Checcked=auth()->user()->id;
+            $requestOrder->Quality_Checked=auth()->user()->id;
         }
         if(strcmp($orderStatus, 'PO')==0){
             Log::info('Status '.$orderStatus);

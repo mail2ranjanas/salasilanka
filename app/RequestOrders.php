@@ -27,4 +27,8 @@ class RequestOrders extends Model
     {
         return $this->hasOne('App\Site', 'id', 'Site_ID');
     }
+    public function qualityCheckedUser()
+    {
+        return $this->hasOne('App\User', 'id', 'Quality_Checked');
+    }
 }
